@@ -56,9 +56,9 @@ def main() :
     setSeed(1)
     # Create model Instance
     if args.auxiliaryLoss :
-        model = AutoEncoderAuxiliary(args.imageChannel, args.imageChannel, 64)
+        model = AutoEncoderAuxiliary(args.imageChannel, args.imageChannel, 128)
     else :
-        model = AutoEncoder(args.imageChannel, args.imageChannel, 64)
+        model = AutoEncoder(args.imageChannel, args.imageChannel, 128)
 
     # Set Seed
     setSeed(1)
@@ -267,18 +267,18 @@ def main() :
 
             # Save Best Model
             torch.save(bestModel, f"best_model/{args.project}/{args.modelName}_best.pth")
+            
+        # Save Lastest Model
+        if torch.cuda.device_count() > 1 :
+            lastestModel = copy.deepcopy(model.module.state_dict())
+        else :
+            lastestModel = copy.deepcopy(model.state_dict())
+        
+        torch.save(lastestModel, f"latest_model/{args.project}/{args.modelName}_latest.pth")
 
         # Update Learning Rate Scheduler
         scheduler.step()
 
-    # Save Lastest Model
-    if torch.cuda.device_count() > 1 :
-        lastestModel = copy.deepcopy(model.module.state_dict())
-    else :
-        lastestModel = copy.deepcopy(model.state_dict())
-    
-    torch.save(lastestModel, f"latest_model/{args.project}/{args.modelName}_latest.pth")
-    
     # Print Training Result
     print(f"Best Epoch : {bestEpoch}")
     print(f"Best PSNR : {bestPSNR:.6f}")
