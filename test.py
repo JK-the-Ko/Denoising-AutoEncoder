@@ -87,19 +87,19 @@ def main() :
                     tensorPred = model(tensorNoisy).detach().cpu()
 
                 # Calculate PSNR
-                psnr = calcPSNR(tensorClean, tensorPred)
+                PSNR = calcPSNR(tensorClean, tensorPred)
 
                 # Calculate SSIM
-                ssim = calcSSIM(tensorClean, tensorPred)
+                SSIM = calcSSIM(tensorClean, tensorPred)
 
                 # Append Image Name
                 imageNameList.append(f"test_sample{i}.png")
 
                 # Append PSNR
-                PSNRList.append(psnr.item())
+                PSNRList.append(PSNR.item())
 
                 # Append SSIM
-                SSIMList.append(ssim.item())
+                SSIMList.append(SSIM.item())
 
                 # Convert PyTorch Tensor to Pillow Image Format
                 tensorPred = torch.clamp(tensorPred.squeeze(0), min = 0.0, max = 1.0)
