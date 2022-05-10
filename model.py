@@ -10,13 +10,14 @@ class AutoEncoder(nn.Module) :
         
         # Create Layer Instance
         self.convIn = nn.Sequential(
-                            Conv2dLayer(inChannels, channels, 3, 1, norm = None, act = None),
+                            Conv2dLayer(inChannels, channels, 7, 1, norm = None, act = None),
                             *[EncoderResidualBlock(channels, 3, 1, norm = None) for _ in range(4)]
                             )
-        self.convOut = Conv2dLayer(channels, outChannels, 3, 1, norm = None, act = None)
+        self.convOut = Conv2dLayer(channels, outChannels, 7, 1, norm = None, act = None)
         self.down1 = Downsample(4, channels, channels, 3, 1, norm = None)
         self.down2 = Downsample(4, channels, channels, 3, 1, norm = None)
         self.down3 = Downsample(4, channels, channels, 3, 1, norm = None)
+        self.ResBlock = nn.Sequential(*[EncoderResidualBlock(channels, 3, 1, norm = None) for _ in range(5)])
         self.up3 = Upsample(channels, channels, 3, 1, norm = None)
         self.up2 = Upsample(channels, channels, 3, 1, norm = None)
         self.up1 = Upsample(channels, channels, 3, 1, norm = None)
@@ -34,6 +35,7 @@ class AutoEncoder(nn.Module) :
         output = self.down2(output)
         skipConnection.append(output)
         output = self.down3(output)
+        output = self.ResBlock(output)
         output = self.up3(output, skipConnection.pop())
         output = self.up2(output, skipConnection.pop())
         output = self.up1(output, skipConnection.pop())
@@ -59,10 +61,10 @@ class AutoEncoderAuxiliary(nn.Module) :
         
         # Create Layer Instance
         self.convIn = nn.Sequential(
-                            Conv2dLayer(inChannels, channels, 3, 1, norm = None, act = None),
+                            Conv2dLayer(inChannels, channels, 7, 1, norm = None, act = None),
                             *[EncoderResidualBlock(channels, 3, 1, norm = None) for _ in range(4)]
                             )
-        self.convOut = Conv2dLayer(channels, outChannels, 3, 1, norm = None, act = None)
+        self.convOut = Conv2dLayer(channels, outChannels, 7, 1, norm = None, act = None)
         self.auxOut = nn.Sequential(
                           nn.Upsample(scale_factor = 8, mode = "bicubic"),
                           Conv2dLayer(channels, outChannels, 3, 1, norm = None, act = None)
@@ -70,6 +72,7 @@ class AutoEncoderAuxiliary(nn.Module) :
         self.down1 = Downsample(4, channels, channels, 3, 1, norm = None)
         self.down2 = Downsample(4, channels, channels, 3, 1, norm = None)
         self.down3 = Downsample(4, channels, channels, 3, 1, norm = None)
+        self.ResBlock = nn.Sequential(*[EncoderResidualBlock(channels, 3, 1, norm = None) for _ in range(5)])
         self.up3 = Upsample(channels, channels, 3, 1, norm = None)
         self.up2 = Upsample(channels, channels, 3, 1, norm = None)
         self.up1 = Upsample(channels, channels, 3, 1, norm = None)
@@ -87,6 +90,7 @@ class AutoEncoderAuxiliary(nn.Module) :
         output = self.down2(output)
         skipConnection.append(output)
         output = self.down3(output)
+        output = self.ResBlock(output)
         outputAux = self.auxOut(output)
         output = self.up3(output, skipConnection.pop())
         output = self.up2(output, skipConnection.pop())
