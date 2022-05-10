@@ -77,18 +77,16 @@ def main() :
 
                 # Assign Device
                 if cudaAvailability :
+                    tensorClean = tensorClean.cuda()
                     tensorNoisy = tensorNoisy.cuda()
       
                 # Get Prediction
                 if args.auxiliaryLoss :
                     # Get Inference
                     tensorAux, tensorPred = model(tensorNoisy)
-                    
-                    # Unload from GPU
-                    tensorNoisy, tensorAux, tensorPred = tensorNoisy.cpu(), tensorAux.cpu(), tensorPred.cpu()
                 else :
                     # Unload from GPU
-                    tensorNoisy, tensorPred = tensorNoisy.cpu(), model(tensorNoisy).cpu()
+                    tensorPred = model(tensorNoisy)
 
                 # Calculate PSNR
                 PSNR = calcPSNR(tensorClean, tensorPred)
