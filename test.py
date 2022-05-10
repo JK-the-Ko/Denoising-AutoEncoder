@@ -111,7 +111,12 @@ def main() :
                 
                 # Update TQDM Bar
                 pBar.update()
-                
+    
+    # Add Statistic
+    PSNRList.append(np.mean(PSNRList))
+    SSIMList.append(np.mean(SSIMList))
+    imageNameList.append("Average Metric")
+    
     # Create Dictionary Instance for Saving Result
     d = {"Denoised Image PSNR(dB)" : PSNRList,
            "Denoised Image SSIM" : SSIMList}
