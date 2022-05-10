@@ -8,6 +8,7 @@ import wandb
 
 from datasets import DataFromFolder
 from model import AutoEncoder, AutoEncoderAuxiliary
+from loss import *
 from utils import *
 
 import torch
@@ -34,8 +35,8 @@ def main() :
     parser.add_argument("--validSize", type = int, default = 256)
     parser.add_argument("--imageChannel", type = int, default = 3)
     parser.add_argument("--batchSize", type = int, default = 8)
-    parser.add_argument("--epochs", type = int, default = 50)
-    parser.add_argument("--lr", type = float, default = 2e-4)
+    parser.add_argument("--epochs", type = int, default = 100)
+    parser.add_argument("--lr", type = float, default = 4e-4)
     args = parser.parse_args()
 
     # Get Current Namespace
@@ -46,19 +47,19 @@ def main() :
 
     # Initialize Project Name
     if args.auxiliaryLoss :
-        args.modelName += "-Aux-L1"
+        args.modelName += "-Aux-L1+SSIM"
         wandb.run.name = args.modelName
     else :
-        args.modelName += "-Vanilla-L1"
+        args.modelName += "-Vanilla-L1+SSIM"
         wandb.run.name = args.modelName
         
     # Set Seed
     setSeed(1)
     # Create model Instance
     if args.auxiliaryLoss :
-        model = AutoEncoderAuxiliary(args.imageChannel, args.imageChannel, 128)
+        model = AutoEncoderAuxiliary(args.imageChannel, args.imageChannel, 64)
     else :
-        model = AutoEncoder(args.imageChannel, args.imageChannel, 128)
+        model = AutoEncoder(args.imageChannel, args.imageChannel, 64)
 
     # Set Seed
     setSeed(1)
@@ -144,13 +145,13 @@ def main() :
                 predsAux, preds = model(inputs)
                 
                 # Calculate Loss
-                loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets)
+                loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
             else :
                 # Forward Pass Input Data
                 preds = model(inputs)
 
                 # Calculate Loss
-                loss = F.l1_loss(preds, targets)
+                loss = F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
         
             # Calculate Gradient
             loss.backward()
@@ -197,13 +198,13 @@ def main() :
                     predsAux, preds = model(inputs)
                     
                     # Calculate Loss
-                    loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets)
+                    loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
                 else :
                     # Forward Pass Input Data
                     preds = model(inputs)
 
                     # Calculate Loss
-                    loss = F.l1_loss(preds, targets)
+                    loss = F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
 
                 # Update Loss
                 validLoss.update(loss.item(), len(inputs))
