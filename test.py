@@ -31,10 +31,10 @@ def main() :
 
     # Load Trained Model
     if args.auxiliaryLoss :
-        model = AutoEncoderAuxiliary(args.imageChannel, args.imageChannel, 128)
+        model = AutoEncoderAuxiliary(args.imageChannel, args.imageChannel, 64)
         model.load_state_dict(torch.load(args.modelWeightsDir))
     else :
-        model = AutoEncoder(args.imageChannel, args.imageChannel, 128)
+        model = AutoEncoder(args.imageChannel, args.imageChannel, 64)
         model.load_state_dict(torch.load(args.modelWeightsDir))
 
     # Check CUDA Availability
@@ -81,10 +81,14 @@ def main() :
       
                 # Get Prediction
                 if args.auxiliaryLoss :
+                    # Get Inference
                     tensorAux, tensorPred = model(tensorNoisy)
-                    tensorAux, tensorPred = tensorAux.cpu(), tensorPred.cpu()
+                    
+                    # Unload from GPU
+                    tensorNoisy, tensorAux, tensorPred = tensorNoisy.cpu(), tensorAux.cpu(), tensorPred.cpu()
                 else :
-                    tensorPred = model(tensorNoisy).cpu()
+                    # Unload from GPU
+                    tensorNoisy, tensorPred = tensorNoisy.cpu(), model(tensorNoisy).cpu()
 
                 # Calculate PSNR
                 PSNR = calcPSNR(tensorClean, tensorPred)
