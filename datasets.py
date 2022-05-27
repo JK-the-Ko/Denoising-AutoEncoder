@@ -3,7 +3,7 @@ from os.path import join
 
 from random import randint
 
-import PIL.Image as pil_image
+import PIL.Image as pilImage
 
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
@@ -35,7 +35,7 @@ class DataFromFolder(Dataset) :
 
     def loadImage(self, imagePath) :
         # Load Image as Pillow Format
-        image = pil_image.open(imagePath)
+        image = pilImage.open(imagePath)
         
         return image
 

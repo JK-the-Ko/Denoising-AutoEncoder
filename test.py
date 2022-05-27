@@ -3,7 +3,7 @@ import argparse
 from os import listdir
 from os.path import join
 
-import PIL.Image as pil_image
+import PIL.Image as pilImage
 import pandas as pd
 
 from model import AutoEncoder, AutoEncoderAuxiliary
@@ -68,8 +68,8 @@ def main() :
         with torch.no_grad() :
             for i in range(len(noisyPathList)) :
                 # Load Image as Pillow Format
-                imageNoisy = pil_image.open(noisyPathList[i])
-                imageClean = pil_image.open(cleanPathList[i])
+                imageNoisy = pilImage.open(noisyPathList[i])
+                imageClean = pilImage.open(cleanPathList[i])
     
                 # Convert Pillow Format into PyTorch Tensor + Add Dimension
                 tensorNoisy = toTensor(imageNoisy).unsqueeze(0)
