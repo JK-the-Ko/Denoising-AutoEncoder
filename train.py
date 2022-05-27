@@ -27,6 +27,7 @@ def main() :
     parser.add_argument("--project", type = str, required = True)
     parser.add_argument("--modelName", type = str, default = "DAE")
     parser.add_argument("--auxiliaryLoss", action = "store_true")
+    parser.add_argument("--SSIMLoss", action = "store_true")
     parser.add_argument("--trainNoisyDir", type = str, required = True)
     parser.add_argument("--trainCleanDir", type = str, required = True)
     parser.add_argument("--validNoisyDir", type = str, required = True)
@@ -145,13 +146,19 @@ def main() :
                 predsAux, preds = model(inputs)
                 
                 # Calculate Loss
-                loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
+                if args.SSIMLoss :
+                    loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
+                else :
+                    loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets)
             else :
                 # Forward Pass Input Data
                 preds = model(inputs)
 
                 # Calculate Loss
-                loss = F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
+                if args.SSIMLoss :
+                    loss = F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
+                else :
+                    loss = F.l1_loss(preds, targets)
         
             # Calculate Gradient
             loss.backward()
@@ -198,13 +205,19 @@ def main() :
                     predsAux, preds = model(inputs)
                     
                     # Calculate Loss
-                    loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
+                    if args.SSIMLoss :
+                        loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
+                    else :
+                        loss = F.l1_loss(predsAux, targets) + F.l1_loss(preds, targets)
                 else :
                     # Forward Pass Input Data
                     preds = model(inputs)
 
                     # Calculate Loss
-                    loss = F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
+                    if args.SSIMLoss :
+                        loss = F.l1_loss(preds, targets) + SSIMLoss(preds, targets)
+                    else :
+                        loss = F.l1_loss(preds, targets)
 
                 # Update Loss
                 validLoss.update(loss.item(), len(inputs))
