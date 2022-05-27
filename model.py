@@ -1,4 +1,3 @@
-import torch
 from torch import nn
 
 from modelParts import Conv2dLayer, EncoderResidualBlock, Downsample, Upsample
@@ -48,7 +47,7 @@ class AutoEncoder(nn.Module) :
         for m in self.modules() :
             if isinstance(m, nn.Conv2d) :
                 # Apply Xavier Uniform Initialization
-                torch.nn.init.xavier_uniform_(m.weight.data)
+                nn.init.xavier_uniform_(m.weight.data)
 
                 if m.bias is not None :
                     # Set Bias to Zero
@@ -104,7 +103,7 @@ class AutoEncoderAuxiliary(nn.Module) :
         for m in self.modules() :
             if isinstance(m, nn.Conv2d) :
                 # Apply Xavier Uniform Initialization
-                torch.nn.init.xavier_uniform_(m.weight.data)
+                nn.init.xavier_uniform_(m.weight.data)
 
                 if m.bias is not None :
                     # Set Bias to Zero
