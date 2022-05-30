@@ -48,11 +48,18 @@ def main() :
 
     # Initialize Project Name
     if args.auxiliaryLoss :
-        args.modelName += "-Aux-L1+SSIM"
-        wandb.run.name = args.modelName
+        if args.SSIMLoss :
+            args.modelName += "-Aux-L1+SSIM"
+        else :
+            args.modelName += "-Aux-L1"
+
     else :
-        args.modelName += "-Vanilla-L1+SSIM"
-        wandb.run.name = args.modelName
+        if args.SSIMLoss :
+            args.modelName += "-Vanilla-L1+SSIM"
+        else :
+            args.modelName += "-Vanilla-L1"
+    
+    wandb.run.name = args.modelName
         
     # Set Seed
     setSeed(1)
