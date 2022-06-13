@@ -1,4 +1,8 @@
 # Denoising AutoEncoder
+* ## Usage
+  ```
+  python3 train.py --project PROJECT_NAME --trainNoisyDir TRAIN_NOISY_DIR --trainCleanDir TRAIN_CLEAN_DIR --validNoisyDir VALID_NOISY_DIR --validCleanDir VALID_CLEAN_DIR
+  ```
 * ## Framework
   ![image](https://user-images.githubusercontent.com/55126482/166626342-224de0dd-530c-4da5-92e7-6a102f4503ec.png)
 * ## Architecture
